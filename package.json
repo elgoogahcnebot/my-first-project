@@ -3,10 +3,13 @@
   "version": "3.0.0",
   "type": "module",
   "main": "src/index.ts",
+  "description": "قندوز حسن - شات خاص بعيد عن قوقل",
   "scripts": {
     "dev": "tsx src/index.ts"
   },
   "dependencies": {
-    "google-generative-ai": "^0.17.0"
+    "google-generative-ai": "^0.17.0",
+    "groq-sdk": "^0.7.0"
   }
 }
+
