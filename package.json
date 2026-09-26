@@ -1,0 +1,12 @@
+{
+  "name": "my-first-project",
+  "version": "3.0.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "google-generative-ai": "^0.17.0"
+  }
+}
