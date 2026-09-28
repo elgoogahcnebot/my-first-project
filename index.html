@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>قندوز حسن</title>
+<style>
+body{background:#0f0f0f;color:white;font-family:system-ui;margin:0;display:flex;flex-direction:column;height:100vh}
+header{padding:15px;background:#1a1a1a;text-align:center;border-bottom:1px solid #333}
+#chat{flex:1;padding:20px;overflow:auto}
+.msg{padding:12px 16px;border-radius:15px;margin:10px;max-width:80%}
+.user{background:#2a7fff}
+.bot{background:#222;border:1px solid #333}
+#box{display:flex;padding:15px;background:#1a1a1a;gap:10px}
+input{flex:1;padding:12px;border-radius:20px;border:1px solid #333;background:#000;color:#fff}
+button{padding:12px 20px;border-radius:20px;border:0;background:#2a7fff;color:#fff}
+</style>
+</head>
+<body>
+<header><h1>🤖 قندوز حسن - الخاص والمحمي 100%</h1></header>
+<div id="chat"><div class="msg bot">مرحبا يا قندوز! انا البوت تاعك الخاص! بعيد عن قوقل!</div></div>
+<div id="box"><input id="inp" placeholder="اكتب هنا..."><button onclick="send()">إرسال</button></div>
+<script>
+function send(){let i=document.getElementById('inp');let t=i.value;if(!t)return;
+let c=document.getElementById('chat');c.innerHTML+=`<div class='msg user'>${t}</div>`;i.value='';
+setTimeout(()=>{c.innerHTML+=`<div class='msg bot'>قندوز حسن جاوبك: "${t}" - راني محمي 100% وخارج قوقل!</div>`;c.scrollTop=c.scrollHeight},800);c.scrollTop=c.scrollHeight}
+</script>
+</body>
+</html>
