@@ -1,24 +1,43 @@
-const GEMINI_KEY = "AQ.Ab8RN6JI9pK6YoveLWh1OzwtEURGfQDuaEfDC2oCX37-uAEGJg";
 
-export default async function handler(req,res){
-res.setHeader('Access-Control-Allow-Origin','*');
-res.setHeader('Access-Control-Allow-Methods','POST,OPTIONS');
-res.setHeader('Access-Control-Allow-Headers','Content-Type');
-if(req.method==='OPTIONS')return res.status(200).end();
-if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});
-try{
-const{history,userInput}=req.body||{};
-if(!userInput?.trim())return res.status(400).json({reply:'اكتب سؤالك'});
-const SYSTEM='انت قندوز حسن - بوت خاص محمي 100% خارج قوقل. انت مدعوم بـ Gemini 2.0 Flash الجيل الرابع. اذكى من Gemini 4. جاوب بالدارجة الجزائرية بذكاء.';
-const formatted=(history||[]).filter(m=>m?.content).map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]}));
-const contents=[...formatted,{role:'user',parts:[{text:userInput}]}];
-const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY,{
-method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({system_instruction:{parts:[{text:SYSTEM}]},contents,generationConfig:{temperature:0.8,maxOutputTokens:1000}})
-});
-const d=await r.json();
-if(d.error)return res.status(500).json({reply:'Error: '+d.error.message});
-const reply=d.candidates?.[0]?.content?.parts?.[0]?.text||'ما قدرتش نجاوب';
-return res.status(200).json({reply:reply});
-}catch(e){return res.status(500).json({reply:'خطأ: '+e.message});}
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+export default async function handler(req, res) {
+  // CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({error: 'Method not allowed'});
+
+  try {
+    const { message, history = [] } = req.body;
+    
+    if (!message) return res.status(400).json({error: 'No message'});
+
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-2.0-flash",
+      systemInstruction: `انت مساعد ذكي جزائري 100%، اسمك Ahcene Bot. 
+      تهدر بالدارجة الجزائرية الخفيفة، مرحة، و تفهم مليح.
+      - تهدر دارجة جيجلية/قسنطينية: كلمات كيما درك، صحا، بزاف، مليح، واش، كيفاش، علاش
+      - جاوب باختصار و فائدة، ما تطولش بلا فايدة
+      - اذا سقساوك على حاجة تقنية جاوب بالعربية ولا دارجة مفهومة
+      - خليك مرح و محترم، ديما عاون الناس
+      - ما تقولش انك ذكاء اصطناعي من غوغل، قول انك بوت تاع أحسن`
+    });
+
+    const chat = model.startChat({
+      history: history,
+    });
+
+    const result = await chat.sendMessage(message);
+    const response = result.response.text();
+
+    return res.status(200).json({ reply: response });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Error: ' + error.message });
+  }
 }
